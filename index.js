@@ -1,6 +1,6 @@
-import { fetchShader, include } from './ShaderUtils.js';
-import Material from './Material.js';
-import Compute from './Compute.js';
+import { fetchShader, include } from './src/ShaderUtils.js';
+import Material from './src/Material.js';
+import Compute from './src/Compute.js';
 
 class Main {
     constructor() {
@@ -11,6 +11,7 @@ class Main {
         this.mouseDown = false;
         this.mouseRight = false;
         this.selected = 1;
+        this.shiftMode = 0;
     }
 
     async initialize() {
@@ -44,10 +45,10 @@ class Main {
     }
 
     async setupShaders() {
-        this.vertexShaderCode = await fetchShader('./shader/vertex.wgsl');
-        this.fragmentShaderCode = await include('./shader/fragment.wgsl');
-        this.computeShaderCode = await include('./shader/compute.wgsl');
-        this.computePlaceShaderCode = await include('./shader/computePlace.wgsl');
+        this.vertexShaderCode = await fetchShader('./src/shader/vertex.wgsl');
+        this.fragmentShaderCode = await include('./src/shader/fragment.wgsl');
+        this.computeShaderCode = await include('./src/shader/compute.wgsl');
+        this.computePlaceShaderCode = await include('./src/shader/computePlace.wgsl');
     }
 
     createBuffers() {
@@ -60,9 +61,9 @@ class Main {
         });
 
         this.initialGrid = new Uint32Array(this.gridSize.x * this.gridSize.y);
-        for (let i = 0; i < this.gridSize.x * this.gridSize.y; i++) {
-            this.initialGrid[i] = Math.random() > 0.95 ? 1 : 0;
-        }
+        //for (let i = 0; i < this.gridSize.x * this.gridSize.y; i++) {
+        //    this.initialGrid[i] = Math.random() > 0.95 ? 1 : 0;
+        //}
 
         this.device.queue.writeBuffer(this.gridBuffer, 0, this.initialGrid);
     }
@@ -83,8 +84,9 @@ class Main {
     createComputeShader() {
         this.compute = new Compute(this.device, this.computeShaderCode, {
             0: { size: 8, usage: GPUBufferUsage.UNIFORM },
+            1: { size: 4, usage: GPUBufferUsage.UNIFORM },
         }, {
-            1: this.gridBuffer,
+            2: this.gridBuffer,
             40: this.device.createBuffer({size: 4, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST})
         });
 
@@ -110,6 +112,12 @@ class Main {
         this.canvas.addEventListener("mousedown", (event) => this.onMouseDown(event));
         this.canvas.addEventListener("mouseup", (event) => this.onMouseUp(event));
         this.canvas.addEventListener("wheel", (event) => this.onWheel(event));
+
+        const materialSelect = document.getElementById('material-select');
+        materialSelect.addEventListener('change', (event) => {
+        this.selected = parseInt(event.target.value, 10);
+        console.log(`Selected material changed to: ${this.selected}`);
+    });
     }
 
     resize() {
@@ -166,6 +174,7 @@ class Main {
     onWheel(event) {
         this.radius = Math.min(Math.max(Math.floor(this.radius - event.deltaY / 100), 0), 20);
         this.material.updateUniform('3', new Float32Array([this.radius]));
+        console.log(this.radius);
     }
 
     render() {
@@ -179,7 +188,10 @@ class Main {
             this.computePlace.run(commandEncoder, Math.ceil(this.gridSize.x / 8), Math.ceil(this.gridSize.y / 8), 1);
         }
 
-        this.compute.run(commandEncoder, Math.ceil(this.gridSize.x / 8), Math.ceil(this.gridSize.y / 8), 1);
+        this.compute.updateUniform(1, new Uint32Array([this.shiftMode]));
+        this.shiftMode = 1 - this.shiftMode;
+
+        this.compute.run(commandEncoder, Math.ceil(this.gridSize.x / 8 / 2), Math.ceil(this.gridSize.y / 8 / 2), 1);
 
         const textureView = this.context.getCurrentTexture().createView();
         this.material.render(commandEncoder, textureView);
