@@ -10,7 +10,7 @@
 #include "./include/waterBehaviour.wgsl"
 #include "./include/processParticle.wgsl"
 
-@compute @workgroup_size(8, 8, 1) // Workgroup size is 8x8
+@compute @workgroup_size(8, 8, 1)
 fn main(@builtin(global_invocation_id) global_id : vec3<u32>) {
     // Reduced grid dimensions (2x2 blocks)
     let reduced_width = gridsize.x / 2;
@@ -33,17 +33,10 @@ fn main(@builtin(global_invocation_id) global_id : vec3<u32>) {
 
     // Ensure vertical bounds are respected
     if (base_y >= gridsize.y - 1) {
-        return; // Exit if the bottom row of this block is outside the grid
+        return; 
     }
-
-    // Compute the indices for the 2x2 block with horizontal wrapping
-    let index = (base_x + base_y * gridsize.x);                        // Top-left
-    let index1 = ((base_x + 1) % gridsize.x + base_y * gridsize.x);    // Top-right
-    let index2 = (base_x + (base_y + 1) * gridsize.x);                 // Bottom-left
-    let index3 = ((base_x + 1) % gridsize.x + (base_y + 1) * gridsize.x); // Bottom-right
-
-    let r = random(index);
-
+    
+    random(0);
     // Sand behavior for the 2x2 block
     processParticle(base_x, base_y, gridsize.x, gridsize.y);
 }
