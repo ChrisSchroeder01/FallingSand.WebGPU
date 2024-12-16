@@ -23,33 +23,53 @@ fn waterBehaviour(index: u32, index1: u32, index2: u32, index3: u32, width: u32,
         return;
     }
 
-    // Rule 2: Water moves horizontally if both cells below are water or sand
-    if (topLeft == WATER && (bottomLeft == WATER || bottomLeft == SAND) && (bottomRight == WATER || bottomRight == SAND)) {
-        // Use random to determine if the water moves to the left or right
+    // Rule 2: Water moves horizontally if at least one cell below is not empty
+    if (topLeft == WATER && topRight == EMPTY && (bottomLeft != EMPTY && bottomRight != EMPTY)) {
         let direction = random(index); // Generate a random value
-
-        // If random() decides to move right (e.g., > 0.5), move right
-        if (direction > 0.5 && topRight == EMPTY) {
+        if (direction > 0.5) {
             grid[index] = EMPTY;
             grid[index1] = WATER;
-            return;
         }
-        // Otherwise, move left
-        if (topLeft == EMPTY) {
-            grid[index] = EMPTY;
+        return;
+    }
+
+    if (topRight == WATER && topLeft == EMPTY && (bottomLeft != EMPTY && bottomRight != EMPTY)) {
+        let direction = random(index); // Generate a random value
+        if (direction > 0.5) {
+            grid[index1] = EMPTY;
+            grid[index] = WATER;
+        }
+        return;
+    }
+
+    if (bottomLeft == WATER && bottomRight == EMPTY && topLeft == EMPTY && topRight == EMPTY)
+    {
+        let direction = random(index); // Generate a random value
+        if (direction > 0.5) {
+            grid[index2] = EMPTY;
+            grid[index3] = WATER;
+        }
+        return;
+    }
+
+    if (bottomRight == WATER && bottomLeft == EMPTY && topLeft == EMPTY && topRight == EMPTY)
+    {
+        let direction = random(index); // Generate a random value
+        if (direction > 0.5) {
+            grid[index3] = EMPTY;
             grid[index2] = WATER;
-            return;
         }
+        return;
     }
 
     // Rule 3: Water moves diagonally downwards when possible
-    if (topLeft == WATER && bottomRight == EMPTY && topRight == EMPTY) {
+    if (topLeft == WATER && bottomLeft != EMPTY && bottomRight == EMPTY && topRight == EMPTY) {
         grid[index] = EMPTY;
         grid[index3] = WATER;
         return;
     }
 
-    if (topRight == WATER && bottomLeft == EMPTY && topLeft == EMPTY) {
+    if (topRight == WATER && bottomRight != EMPTY && bottomLeft == EMPTY && topLeft == EMPTY) {
         grid[index1] = EMPTY;
         grid[index2] = WATER;
         return;
