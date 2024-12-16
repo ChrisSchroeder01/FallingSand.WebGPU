@@ -4,6 +4,7 @@
 
 #include "./include/ids.wgsl"
 #include "./include/random.wgsl"
+#include "./include/getset.wgsl"
 
 #include "./include/sandBehaviour.wgsl"
 #include "./include/waterBehaviour.wgsl"
@@ -44,5 +45,5 @@ fn main(@builtin(global_invocation_id) global_id : vec3<u32>) {
     let r = random(index);
 
     // Sand behavior for the 2x2 block
-    processParticle(index, index1, index2, index3, gridsize.x, gridsize.y);
+    processParticle(base_x, base_y, gridsize.x, gridsize.y);
 }

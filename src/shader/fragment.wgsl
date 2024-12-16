@@ -61,8 +61,12 @@ fn main(@builtin(position) fragCoord: vec4<f32>) -> @location(0) vec4<f32> {
     // Choose color based on the cell type
     if (cellType == SAND) {
         return vec4<f32>(0.93, 0.79, 0.69, 1.0);  // Yellow for SAND
-    } else if (cellType == WATER) {
+    } else if (cellType == WATER /*|| cellType == WATERL || cellType == WATERR*/) {
         return vec4<f32>(0.0, 0.0, 1.0, 1.0);  // Blue for WATER
+    } else if(cellType == WATERL) {
+        return vec4<f32>(1.0, 0.0, 0.0, 1.0);
+    } else if(cellType == WATERR) {
+        return vec4<f32>(0.0, 1.0, 0.0, 1.0);
     }
 
     // Output grid UV as color (black for empty cells)
