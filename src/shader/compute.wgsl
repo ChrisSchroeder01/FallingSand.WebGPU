@@ -36,7 +36,7 @@ fn main(@builtin(global_invocation_id) global_id : vec3<u32>) {
         return; 
     }
     
-    random(0);
+    let r = random(0);
     // Sand behavior for the 2x2 block
     processParticle(base_x, base_y, gridsize.x, gridsize.y);
 }

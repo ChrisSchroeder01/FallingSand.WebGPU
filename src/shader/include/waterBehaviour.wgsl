@@ -48,14 +48,14 @@ fn waterBehaviour(x: u32, y: u32, width: u32, height: u32) {
 
     // Rule 1: Water falling straight down
     if (topLeft == WATER && bottomLeft == EMPTY) {
-        setter(x, y, width, height, EMPTY);           // Set top-left to empty
-        setter(x, y+1, width, height, WATER);         // Set bottom-left to water
+        setter(x, y, width, height, EMPTY);
+        setter(x, y+1, width, height, WATER);
         return;
     }
 
     if (topRight == WATER && bottomRight == EMPTY) {
-        setter(x+1, y, width, height, EMPTY);         // Set top-right to empty
-        setter(x+1, y+1, width, height, WATER);       // Set bottom-right to water
+        setter(x+1, y, width, height, EMPTY);
+        setter(x+1, y+1, width, height, WATER);
         return;
     }
 
