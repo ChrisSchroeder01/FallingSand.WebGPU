@@ -1,6 +1,9 @@
-import { fetchShader, include } from './src/ShaderUtils.js';
-import Material from './src/Material.js';
-import Compute from './src/Compute.js';
+import {
+    Material,
+    Compute,
+    fetchShader,
+    include
+} from 'https://cdn.jsdelivr.net/gh/ChrisSchroeder01/webgpu-shader-utils@latest/src/_index.js';
 
 class Main {
     constructor() {
@@ -45,10 +48,10 @@ class Main {
     }
 
     async setupShaders() {
-        this.vertexShaderCode = await fetchShader('./src/shader/vertex.wgsl');
-        this.fragmentShaderCode = await include('./src/shader/fragment.wgsl');
-        this.computeShaderCode = await include('./src/shader/compute.wgsl');
-        this.computePlaceShaderCode = await include('./src/shader/computePlace.wgsl');
+        this.vertexShaderCode = await fetchShader('./shader/vertex.wgsl');
+        this.fragmentShaderCode = await include('./shader/fragment.wgsl');
+        this.computeShaderCode = await include('./shader/compute.wgsl');
+        this.computePlaceShaderCode = await include('./shader/computePlace.wgsl');
     }
 
     createBuffers() {
@@ -87,7 +90,7 @@ class Main {
             1: { size: 4, usage: GPUBufferUsage.UNIFORM },
         }, {
             2: this.gridBuffer,
-            40: this.device.createBuffer({size: 4, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST})
+            40: this.device.createBuffer({ size: 4, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST })
         });
 
         this.compute.createPipeline();
@@ -115,9 +118,9 @@ class Main {
 
         const materialSelect = document.getElementById('material-select');
         materialSelect.addEventListener('change', (event) => {
-        this.selected = parseInt(event.target.value, 10);
-        console.log(`Selected material changed to: ${this.selected}`);
-    });
+            this.selected = parseInt(event.target.value, 10);
+            console.log(`Selected material changed to: ${this.selected}`);
+        });
     }
 
     resize() {
@@ -149,11 +152,11 @@ class Main {
             offset.y = (1.0 - scale.y) * 0.5;
         }
 
-        const mouse = {x: event.clientX - canvasRect.left, y: event.clientY - canvasRect.top};
+        const mouse = { x: event.clientX - canvasRect.left, y: event.clientY - canvasRect.top };
 
-        let gridUV = {x: (mouse.x / screenWidth - offset.x) / scale.x, y: (mouse.y / screenHeight - offset.y) / scale.y};
+        let gridUV = { x: (mouse.x / screenWidth - offset.x) / scale.x, y: (mouse.y / screenHeight - offset.y) / scale.y };
 
-        this.gridCoord = {x: Math.floor(gridUV.x * this.gridSize.x), y: Math.floor(gridUV.y * this.gridSize.y)};
+        this.gridCoord = { x: Math.floor(gridUV.x * this.gridSize.x), y: Math.floor(gridUV.y * this.gridSize.y) };
 
         this.material.updateUniform('2', new Uint32Array([this.gridCoord.x, this.gridCoord.y]));
     }
@@ -179,7 +182,7 @@ class Main {
 
     render() {
         const commandEncoder = this.device.createCommandEncoder();
-        
+
         if (this.mouseDown) {
             this.computePlace.updateUniform(1, new Uint32Array([this.gridCoord.x, this.gridCoord.y]))
             this.computePlace.updateUniform(2, new Float32Array([this.radius]))
