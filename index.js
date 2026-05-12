@@ -177,7 +177,6 @@ class Main {
     onWheel(event) {
         this.radius = Math.min(Math.max(Math.floor(this.radius - event.deltaY / 100), 0), 20);
         this.material.updateUniform('3', new Float32Array([this.radius]));
-        console.log(this.radius);
     }
 
     render() {
